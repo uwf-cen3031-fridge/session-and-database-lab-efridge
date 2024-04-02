@@ -1,12 +1,12 @@
 import { Request, Response, Router } from "express";
 import { pino } from "pino";
-import { SessionData } from "express-session";
+import { UserService } from "../services/user.service";
 
 export class AppController {
   public router: Router = Router();
   private log: pino.Logger = pino();
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.initializeRouter();
   }
 
@@ -15,14 +15,25 @@ export class AppController {
       res.render("login");
     });
 
-    // Handle login form submissions
-    this.router.post("/processLogin", (req: any, res) => {
-      // Process the form
-      // save the username as the "user" in the session scope
-      req.session.user = req.body.username;
+    this.router.get("/signup", function (req, res) {
+      res.render("signup");
+    });
 
-      // Send to the homepage
+    this.router.post("/signup", async (req: any, res) => {
+      const user = await this.userService.createUser(req.body.username, req.body.email, req.body.password);
+      req.session.user = user;
       res.redirect("/");
+    });
+
+    // Handle login form submissions
+    this.router.post("/processLogin", async (req: any, res) => {
+      const user = await this.userService.authenticateUser(req.body.username, req.body.password);
+      if (user) {
+        req.session.user = user;
+        res.redirect("/");
+      } else {
+        res.status(401).send("Invalid username or password");
+      }
     });
 
     // Enforce security
