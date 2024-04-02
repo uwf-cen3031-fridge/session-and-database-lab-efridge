@@ -15,6 +15,11 @@ export class AppController {
       res.render("login");
     });
 
+    this.router.get("/logout", function (req:any, res) {
+      delete req.session.user;
+      res.render("login");
+    });
+
     this.router.get("/signup", function (req, res) {
       res.render("signup");
     });
