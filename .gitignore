@@ -54,3 +54,6 @@ $RECYCLE.BIN/
 
 # VS Code history plugin
 .history
+prisma/dev.db
+prisma/migrations/20240404122444_init/migration.sql
+prisma/dev.db
